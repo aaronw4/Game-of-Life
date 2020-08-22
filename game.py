@@ -1,41 +1,72 @@
-import pygame
-# from pygame.locals import *
+import argparse
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+def random_grid(N):
+    return np.random.choice([1, 0], N*N, p=[0.2, 0.8]).reshape(N, N)
  
-class App:
-    def __init__(self):
-        self._running = True
-        self._display_surf = None
-        self.size = self.weight, self.height = 640, 400
+def add_circle(i, j, grid):
+    circle = np.array([
+        [1, 1, 1],
+        [1, 0, 1],
+        [1, 1, 1]
+    ])
+    grid[i, j] = circle
 
-    def on_init(self):
-        pygame.init()
-        self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE)
-        self._running = True
+def update(frame_number, img, grid, N):
+    new_grid = grid.copy()
+    for i in range(N):
+        for j in range(N):
+            total = int(
+                grid[i, (j-1)%N] + grid[i, (j+1)%N] + grid[(i-1)%N, j] 
+                + grid[(i+1)%N, j] + grid[(i-1)%N, (j-1)%N] + grid[(i-1)%N, (j+1)%N] 
+                + grid[(i+1)%N, (j-1)%N] + grid[(i+1)%N, (j+1)%N]
+            )
+            if grid[i, j] == 1:
+                if (total < 2):
+                    new_grid[i, j] = 0
+                elif total > 3:
+                    new_grid[i, j] = 0
+            else:
+                if total == 3:
+                    new_grid[i, j] = 1
 
-    def on_event(self, event):
-        if event.type == pygame.QUIT:
-            self._running = False
+        img.set_data(new_grid)
+        grid[:] = new_grid[:]
+        return img
 
-    def on_loop(self):
-        pass
+def execute():
+    parser = argparse.ArgumentParser(description="Conway's Game of Life")
+    parser.add_argument('--mov-file', dest='movfile', required=False)
+    parser.add_argument('--interval', dest='interval', required=False)
+    parser.add_argument('--circle', action='store_true', required=False)
+    parser.add_argument('--gosper', action='store_true', required=False)
+    args = parser.parse_args()
 
-    def on_render(self):
-        pass
+    N = 25
 
-    def on_cleanup(self):
-        pygame.quit()
+    update_interval = 50
+    if args.interval:
+        update_interval = int(args.interval)
 
-    def on_execute(self):
-        if self.on_init() == False:
-            self._running = False
+    grid = np.array([])
+    if args.circle:
+        grid = np.zeros(N*N).reshape(N, N)
+        add_circle(12, 12, grid)
+    else:
+        grid = random_grid(N)
 
-        while self._running:
-            for event in pygame.event.get():
-                self.on_event(event)
-            self.on_loop()
-            self.on_render()
-        self.on_render()
+    fig, ax = plt.subplots()
+    img = ax.imshow(grid, interpolation='nearest')
+    ani = animation.FuncAnimation(
+        fig, 
+        update, 
+        fargs=(img, grid, N, ),
+        frames=10, 
+        interval=update_interval, 
+        save_count=50
+    )
 
 if __name__ == '__main__':
-    theApp = App()
-    theApp.on_execute()
+    execute()
