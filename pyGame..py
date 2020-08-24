@@ -1,6 +1,7 @@
 import sys, pygame
 import pygame.draw
 import random
+import pygame.time
 
 size = width, height = 500, 500
 dead_color = 0, 0, 0
@@ -14,6 +15,7 @@ class Game:
         self.screen = pygame.display.set_mode(size)
         self.clear_screen()
         pygame.display.flip()
+        self.last_update = 0
         self.init_grids()
 
     def init_grids(self):
@@ -30,7 +32,6 @@ class Game:
 
         self.grid_active = 0
         self.set_grid()
-        print(self.grids[0])
 
     def set_grid(self, value=None):
         for columns in range(25):
@@ -55,7 +56,7 @@ class Game:
         self.screen.fill(dead_color)
 
     def update(self):
-        pass
+        self.set_grid(None)
 
     def events(self):
         for event in pygame.event.get():
@@ -68,8 +69,12 @@ class Game:
             self.update()
             self.draw()
 
-    
-
+            now = pygame.time.get_ticks()
+            time_passed = now - self.last_update
+            time_remaining = int(1000 - time_passed)
+            if time_remaining > 0:
+                pygame.time.delay(int(time_remaining))
+            self.last_update = now
 
 if __name__ == '__main__':
     game = Game()
