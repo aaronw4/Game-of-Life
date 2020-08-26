@@ -1,7 +1,7 @@
 import sys, pygame, random, time
 import pygame.draw
 
-size = width, height = 500, 500
+size = width, height = 500, 600
 #Cell is 20x20 giving a 25x25 grid
 dead_color = 0, 0, 0
 #black
@@ -10,7 +10,9 @@ alive_color = 255, 255, 255
 
 class Game:
     def __init__(self):
+        self.count = 0
         pygame.init()
+        pygame.display.set_caption("Conway's Game of Life")
         self.screen = pygame.display.set_mode(size)
         #opens window 500x500
         self.clear_screen()
@@ -31,11 +33,11 @@ class Game:
                 row = [0] * 25
                 grid.append(row)
             return grid
-            #grid will be 25x25
+            #creates grid with 25 rows([]) each with 25 columns(0's)
 
         self.grids.append(create_grid())
         self.grids.append(create_grid())
-        #creates grids using create_grid fxn
+        #creates grids using create_grid fxn and appends them to grids[]
 
     def set_grid(self, value=None, grid=0):
         for columns in range(25):
@@ -49,7 +51,6 @@ class Game:
                 self.grids[grid][columns][rows] = cells
 
     def draw(self):
-        color = dead_color
         for columns in range(25):
             for rows in range(25):
                 if self.grids[self.grid_active][columns][rows] == 1:
@@ -57,6 +58,11 @@ class Game:
                 elif self.grids[self.grid_active][columns][rows] == 0:
                     color = dead_color
                 pygame.draw.rect(self.screen, color, (columns * 20, rows * 20, 20, 20)) #(Col pos, Row pos, cell width, cell height)
+
+        font = pygame.font.SysFont('arial', 24)
+        text = font.render("Generation: {}".format(self.count), True, alive_color, dead_color)
+        self.screen.blit(text, (360, 510))
+        
         pygame.display.flip()
         #Turns grid of numbers into colors alive_cole is white, dead_color is black
 
@@ -93,7 +99,7 @@ class Game:
 
     def update(self):
         self.set_grid(0, (self.grid_active + 1) % 2)
-        #clears old grid
+        #clears old grid, this treats off screen cells as dead
         for columns in range(25):
             for rows in range(25):
                 next_grid = self.check_neighboors(columns, rows)
@@ -110,6 +116,7 @@ class Game:
         while True:
             self.events()
             self.update()
+            self.count += 1
             self.draw()
             time.sleep(0.5)
         #Updates grid, displays grid, then waits 0.5 seconds and repeats
