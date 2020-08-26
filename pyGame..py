@@ -44,6 +44,7 @@ class Game:
         #creates grids using create_grid fxn and appends them to grids[]
 
     def clear_grid(self):
+        self.clear_screen()
         for columns in range(25):
             for rows in range(25):
                 self.grids[self.grid_active][columns][rows] = 0
@@ -77,6 +78,9 @@ class Game:
         rect.center = (int(x + (button_width/2)), int(y + (button_height/2)))
         self.screen.blit(text, rect)
 
+    def start_game(self):
+        self.start = True
+
     def draw(self):
         for columns in range(25):
             for rows in range(25):
@@ -90,7 +94,7 @@ class Game:
         text = font.render("Generation: {}".format(self.count), True, alive_color, dead_color)
         self.screen.blit(text, (360, 510))
 
-        self.button('Start', 10, 510, 70, 30, gray, dark_gray)
+        self.button('Start', 10, 510, 70, 30, gray, dark_gray, self.start_game)
         self.button('Pause', 10, 560, 70, 30, gray, dark_gray)
         self.button('Clear', 90, 510, 70, 30, gray, dark_gray)
         self.button('Random', 90, 560, 70, 30, gray, dark_gray, self.random_grid)
@@ -185,10 +189,21 @@ class Game:
                         self.draw()
             if 160 > mouse[0] > 90 and 540 > mouse[1] > 510:
                 if click[0] == 1:
-                    print('click')
                     self.start = False
                     self.clear_grid()
                     self.run()
+            if self.start is False:
+                if click[0] == 1:
+                    mousepos_x, mousepos_y = event.pos
+                    col, row = (int((mousepos_x) // 20), int((mousepos_y) // 20))
+                    print(col, row)
+                    if col < 25 and row < 25:
+                        if self.grids[self.grid_active][col][row] == 1:
+                            self.grids[self.grid_active][col][row] = 0
+                            color = dead_color
+                        else:
+                            self.grids[self.grid_active][col][row] = 1
+                            color = alive_color
             if event.type == pygame.QUIT:
                 sys.exit()
 
