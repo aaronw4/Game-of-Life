@@ -3,7 +3,10 @@ import pygame
 import random
 import time
 import pygame.draw
+import hyperlink
+import pyGameRules
 
+url = hyperlink.parse(u"https://en.wikipedia.org/wiki/Conway's_Game_of_Life#Rules")
 size = width, height = 500, 600
 #Cell is 20x20 giving a 25x25 grid
 dead_color = 0, 0, 0 #black
@@ -80,6 +83,9 @@ class Game:
             self.grids[self.grid_active][12][num] = 1
         self.start = True
 
+    def rules(self):
+        pyGameRules.run()
+
     def button(self, message, x, y, button_width, button_height, inactive_color, active_color, action=None):
         #function to create all buttons. X and Y are coordinates on grid
         mouse = pygame.mouse.get_pos()
@@ -138,6 +144,7 @@ class Game:
         self.button('Start', 10, 510, 70, 30, gray, dark_gray, self.start_game)
         self.button('Pause', 10, 560, 70, 30, gray, dark_gray)
         self.button('Clear', 90, 510, 70, 30, gray, dark_gray)
+        self.button('Rules', 90, 560, 70, 30, gray, dark_gray, self.rules)
 
         self.button('Big X', 170, 510, 70, 30, blue, navy_blue, self.x_grid)
         self.button('Big +', 170, 560, 70, 30, blue, navy_blue, self.plus_grid)
@@ -170,6 +177,7 @@ class Game:
         self.button('Start', 10, 510, 70, 30, gray, dark_gray)
         self.button('Continue', 10, 560, 70, 30, gray, dark_gray)
         self.button('Clear', 90, 510, 70, 30, gray, dark_gray)
+        self.button('Rules', 90, 560, 70, 30, gray, dark_gray, self.rules)
 
         self.button('Big X', 170, 510, 70, 30, blue, navy_blue)
         self.button('Big +', 170, 560, 70, 30, blue, navy_blue)
