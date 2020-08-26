@@ -3,10 +3,8 @@ import pygame.draw
 
 size = width, height = 500, 600
 #Cell is 20x20 giving a 25x25 grid
-dead_color = 0, 0, 0
-#black
-alive_color = 255, 255, 255
-#white
+dead_color = 0, 0, 0 #black
+alive_color = 255, 255, 255 #white
 dark_gray = 50, 50, 50
 gray = 127, 127, 127
 
@@ -114,18 +112,34 @@ class Game:
         pygame.display.flip()
     
     def check_neighboors(self, col, row):
-        def get_value(col, row):
-            try:
-                value = self.grids[self.grid_active][col][row]
-            except:
-                value = 0
-            return value
-        #Counts live neighboors. Ignores None from cells on boarder
+        neighboor_list = []
+        #create a list to hold valid neighbooring cells
 
-        alive_neighboors = get_value(col-1, row) + get_value(col+1, row) + get_value(col, row-1)\
-        + get_value(col, row+1) + get_value(col-1, row-1) + get_value(col+1, row-1)\
-        + get_value(col-1, row+1) + get_value(col+1, row+1)
-        #counts the number of live neighboors
+        for column in range(-1, 2):
+            for rows in range(-1, 2):
+                neighboor_row = row + rows
+                neighboor_column = col + column
+                #Iterates through all neighbooring cells
+
+                valid_neighboor = True
+
+                if (neighboor_row) == row and (neighboor_column) == col:
+                    valid_neighboor = False
+                #Does not count itself as a neighboor
+
+                if (neighboor_row) < 0 or (neighboor_row) > 24:
+                    valid_neighboor = False
+
+                if (neighboor_column) < 0 or (neighboor_column) > 24:
+                    valid_neighboor = False
+                #Neighboor must fall in rows and columns 0 to 24 to be valid
+
+                if valid_neighboor:
+                    neighboor_list.append(self.grids[self.grid_active][neighboor_column][neighboor_row])
+                #Adds neighboor cells that are valid to list
+
+        alive_neighboors = sum(neighboor_list)
+        #adds up the value of all neighbooring cells
         
         if self.grids[self.grid_active][col][row] == 1:
             if alive_neighboors < 2:
