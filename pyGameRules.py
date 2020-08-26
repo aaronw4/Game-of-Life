@@ -1,5 +1,4 @@
 import pygame
-import pyGameConway
 
 def run():
     pygame.init()
@@ -43,7 +42,7 @@ def run():
         #Inserts and centers text in button
 
     def home():
-        pyGame.main()
+        pass
 
     button('Return', 340, 250, 70, 30, gray, dark_gray)
 
