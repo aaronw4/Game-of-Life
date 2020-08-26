@@ -7,6 +7,8 @@ dead_color = 0, 0, 0
 #black
 alive_color = 255, 255, 255
 #white
+dark_gray = 50, 50, 50
+gray = 127, 127, 127
 
 class Game:
     def __init__(self):
@@ -50,6 +52,24 @@ class Game:
                     cells = value
                 self.grids[grid][columns][rows] = cells
 
+    def button(self, message, x, y, button_width, button_height, inactive_color, active_color, action=None):
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        if (x + button_width) > mouse[0] > x and (y + button_height) > mouse[1] > y:
+            pygame.draw.rect(self.screen, active_color, (x, y, button_width, button_height))
+            if click[0] == 1 and action is not None:
+                action()
+        else:
+            pygame.draw.rect(self.screen, inactive_color, (x, y, button_width, button_height))
+        #if mouse is inside button and mouse button is clicked, run action fxn
+
+        font = pygame.font.SysFont('arial', 20)
+        text = font.render(message, True, alive_color)
+        rect = text.get_rect()
+        rect.center = ((x + (button_width/2)), (y + (button_height/2)))
+        self.screen.blit(text, rect)
+
     def draw(self):
         for columns in range(25):
             for rows in range(25):
@@ -62,6 +82,10 @@ class Game:
         font = pygame.font.SysFont('arial', 24)
         text = font.render("Generation: {}".format(self.count), True, alive_color, dead_color)
         self.screen.blit(text, (360, 510))
+
+        self.button('Start', 10, 510, 70, 30, gray, dark_gray)
+        self.button('Pause', 10, 560, 70, 30, gray, dark_gray)
+        self.button('Random', 90, 510, 70, 30, gray, dark_gray)
         
         pygame.display.flip()
         #Turns grid of numbers into colors alive_cole is white, dead_color is black
@@ -119,7 +143,7 @@ class Game:
             self.count += 1
             self.draw()
             time.sleep(0.5)
-        #Updates grid, displays grid, then waits 0.5 seconds and repeats
+        #Updates grid, adds to count, displays grid, then waits 0.5 seconds and repeats
 
 if __name__ == '__main__':
     game = Game()
