@@ -12,6 +12,7 @@ class Game:
     def __init__(self):
         self.count = 0
         self.pause = False
+        self.start = False
         pygame.init()
         pygame.display.set_caption("Conway's Game of Life")
         self.screen = pygame.display.set_mode(size)
@@ -24,7 +25,6 @@ class Game:
         self.grid_active = 0
         self.grids = []
         self.init_grids()
-        self.set_grid()
         #Calls functions that creates two grids and displays one upon initiating
 
     def clear_screen(self):
@@ -43,7 +43,7 @@ class Game:
         self.grids.append(create_grid())
         #creates grids using create_grid fxn and appends them to grids[]
 
-    def set_grid(self, value=None, grid=0):
+    def random_grid(self, value=None, grid=0):
         for columns in range(25):
             for rows in range(25):
                 if value is None:
@@ -53,6 +53,7 @@ class Game:
                 else:
                     cells = value
                 self.grids[grid][columns][rows] = cells
+        self.start = True
 
     def button(self, message, x, y, button_width, button_height, inactive_color, active_color, action=None):
         mouse = pygame.mouse.get_pos()
@@ -87,7 +88,7 @@ class Game:
 
         self.button('Start', 10, 510, 70, 30, gray, dark_gray)
         self.button('Pause', 10, 560, 70, 30, gray, dark_gray)
-        self.button('Random', 90, 510, 70, 30, gray, dark_gray)
+        self.button('Random', 90, 510, 70, 30, gray, dark_gray, self.random_grid)
 
         pygame.display.flip()
         #Turns grid of numbers into colors alive_cole is white, dead_color is black
@@ -156,8 +157,6 @@ class Game:
         #rules of life
 
     def update(self):
-        self.set_grid(0, (self.grid_active + 1) % 2)
-        #clears old grid, this treats off screen cells as dead
         for columns in range(25):
             for rows in range(25):
                 next_grid = self.check_neighboors(columns, rows)
@@ -182,12 +181,16 @@ class Game:
                 sys.exit()
 
     def run(self):
-        while True:
+        while self.start is False:
+            self.events()
+            self.update()
+            self.draw()
+        while self.start is True:
             self.events()
             if self.pause:
                 continue
             self.update()
-            self.count += True
+            self.count += 1
             self.draw()
             time.sleep(0.5)
         #Updates grid, adds to count, displays grid, then waits 0.5 seconds and repeats
