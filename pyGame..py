@@ -56,6 +56,7 @@ class Game:
                 self.grids[self.grid_active][columns][rows] = 0
                 self.grids[(self.grid_active + 1) % 2][columns][rows] = 0
         self.count = 0
+        #sets everything back to zero
 
     def random_grid(self, value=None):
         for columns in range(25):
@@ -80,6 +81,7 @@ class Game:
         self.start = True
 
     def button(self, message, x, y, button_width, button_height, inactive_color, active_color, action=None):
+        #function to create all buttons. X and Y are coordinates on grid
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
@@ -96,6 +98,7 @@ class Game:
         rect = text.get_rect()
         rect.center = (int(x + (button_width/2)), int(y + (button_height/2)))
         self.screen.blit(text, rect)
+        #Inserts and centers text in button
 
     def start_game(self):
         self.start = True
@@ -144,6 +147,7 @@ class Game:
         #Turns grid of numbers into colors alive_cole is white, dead_color is black
 
     def paused_screen(self):
+        #created a new screen to show when paused
         for columns in range(25):
             for rows in range(25):
                 if self.grids[self.grid_active][columns][rows] == 1:
@@ -156,10 +160,16 @@ class Game:
         text = font.render("Generation: {}".format(self.count), True, alive_color, dead_color)
         self.screen.blit(text, (360, 510))
 
+        new_font = pygame.font.SysFont('arial', 20)
+        output = new_font.render('Speed', True, alive_color, dead_color)
+        self.screen.blit(output, (360, 550))
+        self.button(u"\u25B2", 420, 550, 20, 20, gray, dark_gray)
+        self.button(u"\u25BC", 450, 550, 20, 20, gray, dark_gray)
+
+
         self.button('Start', 10, 510, 70, 30, gray, dark_gray)
         self.button('Continue', 10, 560, 70, 30, gray, dark_gray)
         self.button('Clear', 90, 510, 70, 30, gray, dark_gray)
-        self.button('Random', 90, 560, 70, 30, gray, dark_gray)
 
         self.button('Big X', 170, 510, 70, 30, blue, navy_blue)
         self.button('Big +', 170, 560, 70, 30, blue, navy_blue)
@@ -193,6 +203,7 @@ class Game:
                 if valid_neighboor:
                     neighboor_list.append(self.grids[self.grid_active][neighboor_column][neighboor_row])
                 #Adds neighboor cells that are valid to list
+        #Above code treats cells outside of boarder as dead and does not count them
 
         alive_neighboors = sum(neighboor_list)
         #adds up the value of all neighbooring cells
@@ -225,6 +236,7 @@ class Game:
 
         for event in pygame.event.get():
             if 80 > mouse[0] > 10 and 590 > mouse[1] > 560:
+            #location of pause button
                 if click[0] == 1:
                     if self.pause is False:
                         self.pause = True
@@ -233,6 +245,7 @@ class Game:
                         self.pause = False
                         self.draw()
             if 160 > mouse[0] > 90 and 540 > mouse[1] > 510:
+            #location of clear button
                 if click[0] == 1:
                     self.start = False
                     self.clear_grid()
@@ -245,10 +258,9 @@ class Game:
                     if col < 25 and row < 25:
                         if self.grids[self.grid_active][col][row] == 1:
                             self.grids[self.grid_active][col][row] = 0
-                            color = dead_color
                         else:
                             self.grids[self.grid_active][col][row] = 1
-                            color = alive_color
+                #if game is not running, cells can be turned off and on by clicking space with mouse
             if event.type == pygame.QUIT:
                 sys.exit()
 
@@ -264,8 +276,7 @@ class Game:
             time.sleep(self.speed)
             self.update()
             self.count += 1
-            
-        #Updates grid, adds to count, displays grid, then waits 0.5 seconds and repeats
+        #A loop that pauses after each self.draw according to self.speed
 
 if __name__ == '__main__':
     game = Game()
