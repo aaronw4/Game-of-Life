@@ -90,7 +90,7 @@ class Game:
         self.button('Start', 10, 510, 70, 30, gray, dark_gray)
         self.button('Pause', 10, 560, 70, 30, gray, dark_gray)
         self.button('Random', 90, 510, 70, 30, gray, dark_gray)
-        print(self.pause)
+
         pygame.display.flip()
         #Turns grid of numbers into colors alive_cole is white, dead_color is black
 
@@ -158,7 +158,12 @@ class Game:
         for event in pygame.event.get():
             if 80 > mouse[0] > 10 and 590 > mouse[1] > 560:
                 if click[0] == 1:
-                    self.pause ^= True
+                    if self.pause is False:
+                        self.pause = True
+                        self.paused_screen()
+                    else:
+                        self.pause = False
+                        self.draw()
             if event.type == pygame.QUIT:
                 sys.exit()
 
