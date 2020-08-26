@@ -7,6 +7,8 @@ dead_color = 0, 0, 0 #black
 alive_color = 255, 255, 255 #white
 dark_gray = 50, 50, 50
 gray = 127, 127, 127
+blue = 0, 0, 255
+navy_blue = 0, 0 , 100
 
 class Game:
     def __init__(self):
@@ -48,16 +50,29 @@ class Game:
         for columns in range(25):
             for rows in range(25):
                 self.grids[self.grid_active][columns][rows] = 0
+                self.grids[(self.grid_active + 1) % 2][columns][rows] = 0
         self.count = 0
 
-    def random_grid(self, value=None, grid=0):
+    def random_grid(self, value=None):
         for columns in range(25):
             for rows in range(25):
                 if value is None:
                     cells = random.choice([0, 0, 0, 0, 1])
                     #0 = dead, 1 = alive
                     #randomly picks from array. 20% chance of cell being alive
-                self.grids[grid][columns][rows] = cells
+                self.grids[self.grid_active][columns][rows] = cells
+        self.start = True
+
+    def x_grid(self):
+        for num in range(25):
+            self.grids[self.grid_active][num][num] = 1
+            self.grids[self.grid_active][num][24 - num] = 1
+        self.start = True
+
+    def plus_grid(self):
+        for num in range(25):
+            self.grids[self.grid_active][num][12] = 1
+            self.grids[self.grid_active][12][num] = 1
         self.start = True
 
     def button(self, message, x, y, button_width, button_height, inactive_color, active_color, action=None):
@@ -97,7 +112,10 @@ class Game:
         self.button('Start', 10, 510, 70, 30, gray, dark_gray, self.start_game)
         self.button('Pause', 10, 560, 70, 30, gray, dark_gray)
         self.button('Clear', 90, 510, 70, 30, gray, dark_gray)
-        self.button('Random', 90, 560, 70, 30, gray, dark_gray, self.random_grid)
+
+        self.button('Big X', 170, 510, 70, 30, blue, navy_blue, self.x_grid)
+        self.button('Big +', 170, 560, 70, 30, blue, navy_blue, self.plus_grid)
+        self.button('Random', 250, 510, 70, 30, blue, navy_blue, self.random_grid)
 
         pygame.display.flip()
         #Turns grid of numbers into colors alive_cole is white, dead_color is black
@@ -119,6 +137,10 @@ class Game:
         self.button('Continue', 10, 560, 70, 30, gray, dark_gray)
         self.button('Clear', 90, 510, 70, 30, gray, dark_gray)
         self.button('Random', 90, 560, 70, 30, gray, dark_gray)
+
+        self.button('Big X', 170, 510, 70, 30, blue, navy_blue)
+        self.button('Big +', 170, 560, 70, 30, blue, navy_blue)
+        self.button('Random', 250, 510, 70, 30, blue, navy_blue)
         
         pygame.display.flip()
     
@@ -215,10 +237,11 @@ class Game:
             self.events()
             if self.pause:
                 continue
-            self.update()
-            self.count += 1
             self.draw()
             time.sleep(0.5)
+            self.update()
+            self.count += 1
+            
         #Updates grid, adds to count, displays grid, then waits 0.5 seconds and repeats
 
 if __name__ == '__main__':
