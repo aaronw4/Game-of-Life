@@ -13,6 +13,7 @@ gray = 127, 127, 127
 class Game:
     def __init__(self):
         self.count = 0
+        self.pause = False
         pygame.init()
         pygame.display.set_caption("Conway's Game of Life")
         self.screen = pygame.display.set_mode(size)
@@ -27,6 +28,9 @@ class Game:
         self.init_grids()
         self.set_grid()
         #Calls functions that creates two grids and displays one upon initiating
+
+    def clear_screen(self):
+        self.screen.fill(dead_color)
 
     def init_grids(self):
         def create_grid():
@@ -67,7 +71,7 @@ class Game:
         font = pygame.font.SysFont('arial', 20)
         text = font.render(message, True, alive_color)
         rect = text.get_rect()
-        rect.center = ((x + (button_width/2)), (y + (button_height/2)))
+        rect.center = (int(x + (button_width/2)), int(y + (button_height/2)))
         self.screen.blit(text, rect)
 
     def draw(self):
@@ -86,12 +90,28 @@ class Game:
         self.button('Start', 10, 510, 70, 30, gray, dark_gray)
         self.button('Pause', 10, 560, 70, 30, gray, dark_gray)
         self.button('Random', 90, 510, 70, 30, gray, dark_gray)
-        
+        print(self.pause)
         pygame.display.flip()
         #Turns grid of numbers into colors alive_cole is white, dead_color is black
 
-    def clear_screen(self):
-        self.screen.fill(dead_color)
+    def paused_screen(self):
+        for columns in range(25):
+            for rows in range(25):
+                if self.grids[self.grid_active][columns][rows] == 1:
+                    color = alive_color
+                elif self.grids[self.grid_active][columns][rows] == 0:
+                    color = dead_color
+                pygame.draw.rect(self.screen, color, (columns * 20, rows * 20, 20, 20)) #(Col pos, Row pos, cell width, cell height)
+
+        font = pygame.font.SysFont('arial', 24)
+        text = font.render("Generation: {}".format(self.count), True, alive_color, dead_color)
+        self.screen.blit(text, (360, 510))
+
+        self.button('Start', 10, 510, 70, 30, gray, dark_gray)
+        self.button('Continue', 10, 560, 70, 30, gray, dark_gray)
+        self.button('Random', 90, 510, 70, 30, gray, dark_gray)
+        
+        pygame.display.flip()
     
     def check_neighboors(self, col, row):
         def get_value(col, row):
@@ -132,15 +152,23 @@ class Game:
         #updates grid according to rules in check_neighboors fxn
 
     def events(self):
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
         for event in pygame.event.get():
+            if 80 > mouse[0] > 10 and 590 > mouse[1] > 560:
+                if click[0] == 1:
+                    self.pause ^= True
             if event.type == pygame.QUIT:
                 sys.exit()
 
     def run(self):
         while True:
             self.events()
+            if self.pause:
+                continue
             self.update()
-            self.count += 1
+            self.count += True
             self.draw()
             time.sleep(0.5)
         #Updates grid, adds to count, displays grid, then waits 0.5 seconds and repeats
