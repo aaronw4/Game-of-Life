@@ -1,4 +1,7 @@
-import sys, pygame, random, time
+import sys
+import pygame
+import random
+import time
 import pygame.draw
 
 size = width, height = 500, 600
@@ -8,13 +11,14 @@ alive_color = 255, 255, 255 #white
 dark_gray = 50, 50, 50
 gray = 127, 127, 127
 blue = 0, 0, 255
-navy_blue = 0, 0 , 100
+navy_blue = 0, 0, 100
 
 class Game:
     def __init__(self):
         self.count = 0
         self.pause = False
         self.start = False
+        self.speed = 0.5
         pygame.init()
         pygame.display.set_caption("Conway's Game of Life")
         self.screen = pygame.display.set_mode(size)
@@ -96,6 +100,18 @@ class Game:
     def start_game(self):
         self.start = True
 
+    def speed_up(self):
+        if self.speed == 0:
+            pass
+        else:
+            self.speed -= 0.1
+    
+    def speed_down(self):
+        if self.speed == 1:
+            pass
+        else:
+            self.speed += 0.1
+
     def draw(self):
         for columns in range(25):
             for rows in range(25):
@@ -108,6 +124,13 @@ class Game:
         font = pygame.font.SysFont('arial', 24)
         text = font.render("Generation: {}".format(self.count), True, alive_color, dead_color)
         self.screen.blit(text, (360, 510))
+
+        new_font = pygame.font.SysFont('arial', 20)
+        output = new_font.render('Speed', True, alive_color, dead_color)
+        self.screen.blit(output, (360, 550))
+        self.button(u"\u25B2", 420, 550, 20, 20, gray, dark_gray, self.speed_up)
+        self.button(u"\u25BC", 450, 550, 20, 20, gray, dark_gray, self.speed_down)
+
 
         self.button('Start', 10, 510, 70, 30, gray, dark_gray, self.start_game)
         self.button('Pause', 10, 560, 70, 30, gray, dark_gray)
@@ -238,7 +261,7 @@ class Game:
             if self.pause:
                 continue
             self.draw()
-            time.sleep(0.5)
+            time.sleep(self.speed)
             self.update()
             self.count += 1
             
