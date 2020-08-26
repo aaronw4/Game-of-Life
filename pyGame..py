@@ -43,6 +43,12 @@ class Game:
         self.grids.append(create_grid())
         #creates grids using create_grid fxn and appends them to grids[]
 
+    def clear_grid(self):
+        for columns in range(25):
+            for rows in range(25):
+                self.grids[self.grid_active][columns][rows] = 0
+        self.count = 0
+
     def random_grid(self, value=None, grid=0):
         for columns in range(25):
             for rows in range(25):
@@ -50,8 +56,6 @@ class Game:
                     cells = random.choice([0, 0, 0, 0, 1])
                     #0 = dead, 1 = alive
                     #randomly picks from array. 20% chance of cell being alive
-                else:
-                    cells = value
                 self.grids[grid][columns][rows] = cells
         self.start = True
 
@@ -88,7 +92,8 @@ class Game:
 
         self.button('Start', 10, 510, 70, 30, gray, dark_gray)
         self.button('Pause', 10, 560, 70, 30, gray, dark_gray)
-        self.button('Random', 90, 510, 70, 30, gray, dark_gray, self.random_grid)
+        self.button('Clear', 90, 510, 70, 30, gray, dark_gray)
+        self.button('Random', 90, 560, 70, 30, gray, dark_gray, self.random_grid)
 
         pygame.display.flip()
         #Turns grid of numbers into colors alive_cole is white, dead_color is black
@@ -108,7 +113,8 @@ class Game:
 
         self.button('Start', 10, 510, 70, 30, gray, dark_gray)
         self.button('Continue', 10, 560, 70, 30, gray, dark_gray)
-        self.button('Random', 90, 510, 70, 30, gray, dark_gray)
+        self.button('Clear', 90, 510, 70, 30, gray, dark_gray)
+        self.button('Random', 90, 560, 70, 30, gray, dark_gray)
         
         pygame.display.flip()
     
@@ -177,13 +183,18 @@ class Game:
                     else:
                         self.pause = False
                         self.draw()
+            if 160 > mouse[0] > 90 and 540 > mouse[1] > 510:
+                if click[0] == 1:
+                    print('click')
+                    self.start = False
+                    self.clear_grid()
+                    self.run()
             if event.type == pygame.QUIT:
                 sys.exit()
 
     def run(self):
         while self.start is False:
             self.events()
-            self.update()
             self.draw()
         while self.start is True:
             self.events()
