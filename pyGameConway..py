@@ -4,7 +4,7 @@ import random
 import time
 import pygame.draw
 import hyperlink
-import pyGameRules
+import tkinter as tk
 
 url = hyperlink.parse(u"https://en.wikipedia.org/wiki/Conway's_Game_of_Life#Rules")
 size = width, height = 500, 600
@@ -84,7 +84,16 @@ class Game:
         self.start = True
 
     def rules(self):
-        pyGameRules.run()
+        root = tk.Tk()
+        text = tk.Text(root, height=10, width=84)
+        text.configure(font=('Arial', 20))
+        text.pack()
+        text.insert(tk.END, "\n\t\tConway's Game of Life Rules\n", 'big')
+        text.insert(tk.END, "\n        1. Any live cell with fewer than two live neighbours dies, as if by underpopulation.\n\
+        2. Any live cell with two or three live neighbours lives on to the next generation.\n\
+        3. Any live cell with more than three live neighbours dies, as if by overpopulation.\n\
+        4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.", 'body')
+        tk.mainloop()
 
     def button(self, message, x, y, button_width, button_height, inactive_color, active_color, action=None):
         #function to create all buttons. X and Y are coordinates on grid
